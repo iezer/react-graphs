@@ -15,6 +15,8 @@ export default function makeServer() {
           ]
         };
       });
+
+      this.passthrough('https://api.songkick.com/**');
     }
   });
 

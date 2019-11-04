@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import QuickStartGraph from './components/graph';
+import Europe from './components/europe';
 import {
   BrowserRouter as Router,
   Switch,
@@ -18,7 +19,7 @@ function App() {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/about">About</Link>
+              <Link to="/europe">Europe</Link>
             </li>
             <li>
               <Link to="/graph">Graph</Link>
@@ -29,8 +30,9 @@ function App() {
         {/* A <Switch> looks through its children <Route>s and
            renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/about">
-            <p>About</p>
+          <Route path="/europe">
+            <p>Europe</p>
+            <Europe />
           </Route>
           <Route path="/graph">
             <section>
