@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-
+import QuickStartGraph from './components/graph';
 import {
   BrowserRouter as Router,
   Switch,
@@ -21,7 +21,7 @@ function App() {
               <Link to="/about">About</Link>
             </li>
             <li>
-              <Link to="/users">Users</Link>
+              <Link to="/graph">Graph</Link>
             </li>
           </ul>
         </nav>
@@ -32,8 +32,11 @@ function App() {
           <Route path="/about">
             <p>About</p>
           </Route>
-          <Route path="/users">
-            <p>Users</p>
+          <Route path="/graph">
+            <section>
+              <p>Graph</p>
+              <QuickStartGraph/>
+            </section>
           </Route>
           <Route path="/">
             <p>Home</p>
