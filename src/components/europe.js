@@ -9,7 +9,7 @@ const EUROPE_COUNTRY_CODES = [
   'PT', 'RO', 'RU', 'SE', 'SI', 'SK', 'SM', 'TR', 'UA', 'UK', 'VA'
 ];
 
-function gigsUrl(artist_id) {
+function pastGigsUrl(artist_id) {
   const params = {
     apikey: SONGKICK_KEY,
     min_date: '2019-01-01',
@@ -26,6 +26,21 @@ function gigsUrl(artist_id) {
   return url.join('&');
 };
 
+function upcomingGigsUrl(artist_id) {
+  const params = {
+    apikey: SONGKICK_KEY,
+    per_page: 50
+  };
+
+  let url = [];
+
+  url.push(`https://api.songkick.com/api/3.0/artists/${artist_id}/calendar.json?`);
+
+  Object.keys(params).forEach(key => url.push(`${key}=${params[key]}`));
+
+  return url.join('&');
+};
+
 const artists = [
   ['Cécile McLorin Salvant', '2804751'],
   ['Chris Potter', '466442'],
@@ -36,7 +51,8 @@ const artists = [
 ];
 
 function Europe() {
-  fetch(gigsUrl(artists[0][1]));
+  fetch(pastGigsUrl(artists[0][1]));
+  fetch(upcomingGigsUrl(artists[0][1]));
 
   return (
     <div>
