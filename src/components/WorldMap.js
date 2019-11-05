@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { geoMercator, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 
+const MAX_RADIUS = 10;
+
 // from https://medium.com/@zimrick/how-to-create-pure-react-svg-maps-with-topojson-and-d3-geo-e4a6b6848a98
 // and https://bl.ocks.org/MariellaCC/0055298b94fcf2c16940
 class WorldMap extends Component {
@@ -47,6 +49,13 @@ class WorldMap extends Component {
   }
 
   render() {
+    let eventCounts = this.props.markers.map(m => m.events.length);
+    let maxEvents = Math.max.apply(null, eventCounts);
+
+    function calculateRadius(value) {
+      return Math.sqrt(value / maxEvents) * MAX_RADIUS;
+    }
+
     return (
       <svg width={ 800 } height={ 450 } viewBox="0 0 800 450">
         <g className="countries">
@@ -78,7 +87,7 @@ class WorldMap extends Component {
                   key={`marker-${m.location.city}`}
                   cx={ points[0] }
                   cy={ points[1] }
-                  r={ m.events.length }
+                  r={ calculateRadius(m.events.length) }
                   fill="#E91E63"
                   className={`marker marker-${m.location.city}`}
                   onClick={ () => this.handleMarkerClick(i) }
