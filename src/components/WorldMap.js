@@ -73,7 +73,7 @@ class WorldMap extends Component {
                   key={`marker-${m.location.city}`}
                   cx={ points[0] }
                   cy={ points[1] }
-                  r={ 10 }
+                  r={ m.events.length }
                   fill="#E91E63"
                   className={`marker marker-${m.location.city}`}
                   onClick={ () => this.handleMarkerClick(i) }
