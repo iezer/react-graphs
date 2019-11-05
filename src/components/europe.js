@@ -11,7 +11,8 @@ const EUROPE_COUNTRY_CODES = [
   'IE', 'IS', 'IT', 'LI', 'LT', 'LU', 'LV', 'MC', 'MK', 'MT', 'NO', 'NL', 'PL',
   'PT', 'RO', 'RU', 'SE', 'SI', 'SK', 'SM', 'TR', 'UA', 'UK', 'VA',
   'France', 'Germany', 'Belgium', 'Netherlands', 'Switzerland',
-  'Germany', 'Italy', 'Spain', 'Liechtenstein',
+  'Germany', 'Italy', 'Spain', 'Liechtenstein', 'Austria', 'Norway', 'Portugal',
+  'Denmark', 'Sweden', 'Czech Republic', 'Finland', 'Hungary'
 ];
 
 function pastGigsUrl(artist_id) {
@@ -77,6 +78,10 @@ class Europe extends Component {
   consumeData(response) {
     let cities = Object.assign({}, this.state.cities);
 
+    if (!response.resultsPage.results.event) {
+      return;
+    }
+
     response.resultsPage.results.event.forEach(rawEvent => {
       const { displayName, uri, location, start } = rawEvent;
 
@@ -112,8 +117,14 @@ class Europe extends Component {
   }
 
   componentDidMount() {
-    this.fetchData(pastGigsUrl(artists[0][1]));
-    this.fetchData(upcomingGigsUrl(artists[0][1]));
+    let maxArtist = artists.length; // 0
+
+    artists.forEach((artist, i) => {
+      if (i > maxArtist) { return; }
+      let artistId = artist[1];
+      this.fetchData(pastGigsUrl(artistId));
+      this.fetchData(upcomingGigsUrl(artistId));
+    });
   }
 
   render() {
