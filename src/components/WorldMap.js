@@ -3,6 +3,7 @@ import { geoMercator, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
 
 // from https://medium.com/@zimrick/how-to-create-pure-react-svg-maps-with-topojson-and-d3-geo-e4a6b6848a98
+// and https://bl.ocks.org/MariellaCC/0055298b94fcf2c16940
 class WorldMap extends Component {
   constructor() {
     super();
@@ -11,9 +12,13 @@ class WorldMap extends Component {
     };
   }
   projection() {
+    let width = 800;
+    let height = 450;
+
     return geoMercator()
-    .scale(100)
-    .translate([ 800 / 2, 450 / 2 ]);
+    .center([ 13, 52 ]) //comment centrer la carte, longitude, latitude
+    .translate([ width/2, height/2 ]) // centrer l'image obtenue dans le svg
+    .scale([ width/1.5 ]); // zoom, plus la valeur est petit plus le zoom est gros
   }
   componentDidMount() {
     fetch("https://d3js.org/world-110m.v1.json")
