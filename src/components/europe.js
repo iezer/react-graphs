@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import WorldMap from './WorldMap';
 
+import XYPlot from 'reactochart/XYPlot';
+import XAxis from 'reactochart/XAxis';
+import YAxis from 'reactochart/YAxis';
+import BarChart from 'reactochart/BarChart';
+import 'reactochart/styles.css';
+
 const SONGKICK_KEY = process.env.REACT_APP_SONGKICK_KEY;
 
 const NON_EUROPE = ['US', 'Canada'];
@@ -56,9 +62,14 @@ const artists = [
   ['Melissa Aldana', '6813869']
 ];
 
-function isInEurope(location) {
+function getCountryFromLocation(location) {
   let tokens = location.city.split(', ');
   let country = tokens[tokens.length - 1];
+  return country;
+
+}
+function isInEurope(location) {
+  let country = getCountryFromLocation(location);
   let result = EUROPE_COUNTRY_CODES.includes(country);
 
   if (!result && !NON_EUROPE.includes(country)) {
@@ -130,10 +141,35 @@ class Europe extends Component {
   render() {
     let { cities } = this.state;
     let markers = Object.keys(cities).map(c => cities[c]);
+
+    let countries = markers.reduce((result, marker) => {
+      let country = getCountryFromLocation(marker.location);
+      if (result[country]) {
+        result[country] = result[country] + 1;
+      } else {
+        result[country] = 1;
+      }
+      return result;
+    }, {});
+
+    let data = Object.keys(countries).map(country => {
+      return { x: country, y: countries[country] };
+    });
+
     return (
       <div>
-        Europe Gigs??
         <WorldMap markers={markers}/>
+
+        <XYPlot width={1200} height={300}>
+          <XAxis />
+          <YAxis />
+          <BarChart
+            data={data}
+            x={d => d.x}
+            y={d => d.y}
+          />
+        </XYPlot>
+
       </div>
     );
   }
