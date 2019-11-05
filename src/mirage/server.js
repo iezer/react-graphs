@@ -16,6 +16,7 @@ export default function makeServer() {
         };
       });
 
+      this.passthrough('https://d3js.org/**');
       this.passthrough('https://api.songkick.com/**');
     }
   });

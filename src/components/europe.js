@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import WorldMap from './WorldMap';
 
 const SONGKICK_KEY = process.env.REACT_APP_SONGKICK_KEY;
 
@@ -57,6 +58,7 @@ function Europe() {
   return (
     <div>
       Europe Gigs??
+      <WorldMap />
     </div>
   );
 }
