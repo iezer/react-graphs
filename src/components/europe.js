@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import WorldMap from './WorldMap';
 
 const SONGKICK_KEY = process.env.REACT_APP_SONGKICK_KEY;
+
+const NON_EUROPE = ['US', 'Canada'];
 
 const EUROPE_COUNTRY_CODES = [
   'AL', 'AD', 'AM', 'AT', 'BY', 'BE', 'BA', 'BG', 'CH', 'CY', 'CZ', 'DE',
   'DK', 'EE', 'ES', 'FO', 'FI', 'FR', 'GB', 'GE', 'GI', 'GR', 'HU', 'HR',
   'IE', 'IS', 'IT', 'LI', 'LT', 'LU', 'LV', 'MC', 'MK', 'MT', 'NO', 'NL', 'PL',
-  'PT', 'RO', 'RU', 'SE', 'SI', 'SK', 'SM', 'TR', 'UA', 'UK', 'VA'
+  'PT', 'RO', 'RU', 'SE', 'SI', 'SK', 'SM', 'TR', 'UA', 'UK', 'VA',
+  'France', 'Germany', 'Belgium', 'Netherlands', 'Switzerland',
+  'Germany', 'Italy', 'Spain', 'Liechtenstein',
 ];
 
 function pastGigsUrl(artist_id) {
@@ -51,16 +55,77 @@ const artists = [
   ['Melissa Aldana', '6813869']
 ];
 
-function Europe() {
-  fetch(pastGigsUrl(artists[0][1]));
-  fetch(upcomingGigsUrl(artists[0][1]));
+function isInEurope(location) {
+  let tokens = location.city.split(', ');
+  let country = tokens[tokens.length - 1];
+  let result = EUROPE_COUNTRY_CODES.includes(country);
 
-  return (
-    <div>
-      Europe Gigs??
-      <WorldMap />
-    </div>
-  );
+  if (!result && !NON_EUROPE.includes(country)) {
+    console.log(`country ${country} is ${result ? 'in' : 'not in'} Europe (${location.city})`);
+  }
+  return result;
+}
+
+class Europe extends Component {
+  constructor() {
+    super();
+    this.state = {
+      cities: {}
+    };
+  }
+
+  consumeData(response) {
+    let cities = Object.assign({}, this.state.cities);
+
+    response.resultsPage.results.event.forEach(rawEvent => {
+      const { displayName, uri, location, start } = rawEvent;
+
+      let event = {
+        displayName,
+        uri,
+        location,
+        startDate: start.date
+      };
+
+      if (!isInEurope(location)) {
+        return;
+      }
+
+      if (!cities[location.city]) {
+        cities[location.city] = {
+          location,
+          events: []
+        };
+      }
+
+      cities[location.city].events.push(event);
+    });
+
+    this.setState({ cities });
+  }
+
+  fetchData(url) {
+    fetch(url)
+    .then(response => {
+      response.json().then(results => this.consumeData(results));
+    });
+  }
+
+  componentDidMount() {
+    this.fetchData(pastGigsUrl(artists[0][1]));
+    this.fetchData(upcomingGigsUrl(artists[0][1]));
+  }
+
+  render() {
+    let { cities } = this.state;
+    let markers = Object.keys(cities).map(c => cities[c]);
+    return (
+      <div>
+        Europe Gigs??
+        <WorldMap markers={markers}/>
+      </div>
+    );
+  }
 }
 
 export default Europe;

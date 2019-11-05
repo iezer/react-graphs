@@ -34,32 +34,57 @@ class WorldMap extends Component {
       });
     });
   }
+
+  handleMarkerClick(index) {
+    let marker = this.props.markers[index];
+    let size = marker.events.length;
+    console.log(`${marker.location.city}, ${size} ${ size === 1 ? 'event' : 'events'}`);
+  }
+
   render() {
-    console.log(`rendering ${this.state.worldData.length}`);
     return (
       <svg width={ 800 } height={ 450 } viewBox="0 0 800 450">
         <g className="countries">
           {
-            this.state.worldData.map((d,i) => (
-              <path
-                key={ `path-${ i }` }
-                d={ geoPath().projection(this.projection())(d) }
-                className="country"
-                fill={ `rgba(38,50,56,${1 / this.state.worldData.length * i})` }
-                stroke="#FFFFFF"
-                strokeWidth={ 0.5 }
-              />
-            ))
+            this.state.worldData.map((d,i) => {
+              return (
+                <path
+                  key={ `path-${ i }` }
+                  d={ geoPath().projection(this.projection())(d) }
+                  className="country"
+                  fill={ `rgba(38,50,56,${1 / this.state.worldData.length * i})` }
+                  stroke="#FFFFFF"
+                  strokeWidth={ 0.5 }
+                />
+              );
+            })
           }
         </g>
         <g className="markers">
-          <circle
-            cx={ this.projection()([8,48])[0] }
-            cy={ this.projection()([8,48])[1] }
-            r={ 10 }
-            fill="#E91E63"
-            className="marker"
-          />
+          {
+            this.props.markers.map((m, i) => {
+              let { lat, lng } = m.location;
+
+              let projection = this.projection();
+              let points = projection([lng, lat]);
+
+              return (
+                <circle
+                  key={`marker-${m.location.city}`}
+                  cx={ points[0] }
+                  cy={ points[1] }
+                  r={ 10 }
+                  fill="#E91E63"
+                  className={`marker marker-${m.location.city}`}
+                  onClick={ () => this.handleMarkerClick(i) }
+                >
+                  <text>
+                    {m.location.city}
+                  </text>
+                </circle>
+              );
+            })
+          }
         </g>
       </svg>
     );
