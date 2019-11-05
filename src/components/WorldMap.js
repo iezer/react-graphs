@@ -38,7 +38,12 @@ class WorldMap extends Component {
   handleMarkerClick(index) {
     let marker = this.props.markers[index];
     let size = marker.events.length;
-    console.log(`${marker.location.city}, ${size} ${ size === 1 ? 'event' : 'events'}`);
+    let text = [
+      marker.location.city,
+      `${size} ${ size === 1 ? 'event' : 'events'}`
+    ].concat(marker.events.map(e => e.displayName));
+
+    console.log(text.join(', '));
   }
 
   render() {
