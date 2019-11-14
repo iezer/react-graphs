@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/590fde77-324f-47fd-a92b-9457ce447ee9/deploy-status)](https://app.netlify.com/sites/splanky-europe/deploys)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
