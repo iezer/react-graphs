@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { geoMercator, geoPath } from "d3-geo";
+import * as d3 from "d3";
 import { feature } from "topojson-client";
 
 const MAX_RADIUS = 10;
@@ -10,17 +11,18 @@ class WorldMap extends Component {
   constructor() {
     super();
     this.state = {
+      width: 1200,
+      height: 900,
       worldData: [],
     };
   }
   projection() {
-    let width = 800;
-    let height = 450;
+    let { width, height } = this.state;
 
     return geoMercator()
-    .center([ 13, 52 ]) //comment centrer la carte, longitude, latitude
+    .center([ 13, 48 ]) //comment centrer la carte, longitude, latitude
     .translate([ width/2, height/2 ]) // centrer l'image obtenue dans le svg
-    .scale([ width/1.5 ]); // zoom, plus la valeur est petit plus le zoom est gros
+    .scale([ width ]); // zoom, plus la valeur est petit plus le zoom est gros
   }
   componentDidMount() {
     fetch("https://d3js.org/world-110m.v1.json")
@@ -45,6 +47,7 @@ class WorldMap extends Component {
       `${size} ${ size === 1 ? 'event' : 'events'}`
     ].concat(marker.events.map(e => e.displayName));
 
+    alert(text.join(','));
     console.log(text.join(', '));
   }
 
@@ -56,8 +59,31 @@ class WorldMap extends Component {
       return Math.sqrt(value / maxEvents) * MAX_RADIUS;
     }
 
+    let { width, height } = this.state;
+
+    setTimeout(() => {
+      // render labels with D3
+      let g = d3.select('.labels');
+      let projection = this.projection();
+      g.selectAll('text')
+      .data(this.props.markers)
+      .enter()
+      .append('text')
+      .attr('dy', '.35em')
+      .attr('transform', function(d) {
+        let { lat, lng } = d.location;
+        let points = projection([lng, lat]);
+        return `translate(${points[0]}, ${points[1]})`;
+      })
+      .text(function(d) {
+        let { city } = d.location;
+        return city.split(',')[0];
+      })
+      .attr('class', function(d) { return `label label-${d.location.city}`; });
+    }, 0);
+
     return (
-      <svg width={ 800 } height={ 450 } viewBox="0 0 800 450">
+      <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`}>
         <g className="countries">
           {
             this.state.worldData.map((d,i) => {
@@ -99,6 +125,8 @@ class WorldMap extends Component {
               );
             })
           }
+        </g>
+        <g className="labels">
         </g>
       </svg>
     );
