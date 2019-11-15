@@ -18,30 +18,14 @@ function App() {
             <li>
               <Link to="/">Home</Link>
             </li>
-            <li>
-              <Link to="/europe">Europe</Link>
-            </li>
-            <li>
-              <Link to="/graph">Graph</Link>
-            </li>
           </ul>
         </nav>
 
         {/* A <Switch> looks through its children <Route>s and
            renders the first one that matches the current URL. */}
         <Switch>
-          <Route path="/europe">
-            <p>Europe</p>
-            <Europe />
-          </Route>
-          <Route path="/graph">
-            <section>
-              <p>Graph</p>
-              <QuickStartGraph/>
-            </section>
-          </Route>
           <Route path="/">
-            <p>Home</p>
+            <Europe />
           </Route>
         </Switch>
       </div>
