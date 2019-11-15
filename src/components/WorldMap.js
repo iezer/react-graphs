@@ -57,6 +57,7 @@ class WorldMap extends Component {
   }
 
   renderNodes() {
+    console.log('renderNodes');
     let eventCounts = this.props.markers.map(m => m.events.length);
     let maxEvents = Math.max.apply(null, eventCounts);
 
@@ -96,54 +97,75 @@ class WorldMap extends Component {
     let g = d3.select('.labels');
     let projection = this.projection();
 
-    let foci = [];
-    let labels = [];
+    let graph = {
+      nodes: [],
+      links: []
+    };
 
-    this.props.markers.forEach(m => {
+    this.props.markers.forEach((m, i) => {
       let { lat, lng } = m.location;
       let [x, y] = projection([lng, lat]);
       let label = m.location.city.split(',')[0];
+      let node = { x, y, label };
 
-      foci.push({x, y});;
-      labels.push({x, y, label});
+      // store 2 instances of a each node with a link so that node can be tied to link.
+      graph.nodes.push({node});
+      graph.nodes.push({node});
+      graph.links.push({ source: i * 2, target: i * 2 + 1 });
     });
 
-    let node = g.selectAll('text')
-        .data(labels)
+    let nodes = g.selectAll('text')
+        .data(graph.nodes)
         .enter()
         .append('text')
-        .attr('x', function(d) { return d.x; })
-        .attr('y', function(d) { return d.y; })
+        // .attr('x', function(d) { return d.node.x; })
+        // .attr('y', function(d) { return d.node.y; })
         .attr('text-anchor', 'middle')
-        .text(function(d) { return d.label; })
-        .attr('class', function(d) { return `label label-${d.label}`; });
+        .text(function(d, i) { return i % 2 === 0 ? '' : d.node.label; })
+        .attr('class', function(d) { return `label label-${d.node.label}`; });
 
-    // http://bl.ocks.org/pnavarrc/5913636
-    let simulation = d3.forceSimulation(labels)
-        .alphaDecay(0.03)
-        .force('repel', d3.forceManyBody().strength(-120).distance(width / 6))
-        .force('attract', d3.forceManyBody().strength(40).distanceMax(width / 6));
+    function fixna(x) {
+      if (isFinite(x)) return x;
+      return 0;
+    }
+
+    function updateNode(node) {
+      node.attr("transform", function(d) {
+        return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
+      });
+    }
+
+    let simulation = d3.forceSimulation(graph.nodes)
+        .alphaDecay(0.1)
+        .force('charge', d3.forceManyBody().strength(-140).distanceMin(0).distanceMax(10))
+        .force('link', d3.forceLink(graph.links).distance(0));
 
     simulation
     .on("tick", function() {
-      var k = .1 * simulation.alpha();
-      labels.forEach(function(o, j) {
-        // The change in the position is proportional to the distance
-        // between the label and the corresponding place (foci)
-        o.y += (foci[j].y - o.y) * k;
-        o.x += (foci[j].x - o.x) * k;
+      nodes.each(function(d, i) {
+        if (i % 2 === 0) {
+          d.x = d.node.x;
+          d.y = d.node.y;
+        } else {
+
+          let b = this.getBBox();
+          let diffX = d.x - d.node.x;
+          let diffY = d.y - d.node.y;
+          let dist = Math.sqrt(diffX * diffX + diffY * diffY);
+          let shiftX = b.width * (diffX - dist) / (dist * 2);
+          shiftX = Math.max(-b.width, Math.min(0, shiftX));
+          let shiftY = 16;
+          console.log(`b ${b.width} ${b.height} ${d.node.label} ${shiftX}`);
+          this.setAttribute('transform', "translate(" + shiftX + "," + shiftY + ")");
+        }
       });
 
-      // Update the position of the text element
-      node
-      .attr("x", function(d) { return d.x; })
-      .attr("y", function(d) { return d.y; });
+      nodes.call(updateNode);
     });
-
-    simulation.restart();
   }
 
   render() {
+    console.log(JSON.stringify(this.props.markers));
     let { width, height } = this.state;
 
     setTimeout(() => {

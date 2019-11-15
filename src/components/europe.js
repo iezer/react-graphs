@@ -82,6 +82,7 @@ class Europe extends Component {
   constructor() {
     super();
     this.state = {
+      hasAllData: false,
       cities: {}
     };
   }
@@ -121,9 +122,9 @@ class Europe extends Component {
   }
 
   fetchData(url) {
-    fetch(url)
+    return fetch(url)
     .then(response => {
-      response.json().then(results => this.consumeData(results));
+      return response.json().then(results => this.consumeData(results));
     });
   }
 
@@ -133,8 +134,16 @@ class Europe extends Component {
     artists.forEach((artist, i) => {
       if (i > maxArtist) { return; }
       let artistId = artist[1];
-      this.fetchData(pastGigsUrl(artistId));
-      this.fetchData(upcomingGigsUrl(artistId));
+
+      let promises = Promise.all([
+        this.fetchData(pastGigsUrl(artistId)),
+        this.fetchData(upcomingGigsUrl(artistId))
+      ]);
+
+      promises.then(() => {
+        console.log('has all data');
+        this.setState({hasAllData: true });
+      });
     });
   }
 
@@ -156,9 +165,13 @@ class Europe extends Component {
       return { x: country, y: countries[country] };
     });
 
+    console.log(`render hasAllData? ${this.state.hasAllData}`);
     return (
       <div>
-        <WorldMap markers={markers}/>
+        { this.state.hasAllData ?
+          <WorldMap markers={markers}/>
+          : null
+        }
 
         <XYPlot width={1200} height={300}>
           <XAxis />

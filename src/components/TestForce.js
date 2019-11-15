@@ -22,29 +22,17 @@ function drawGraph(graph) {
   });
 
   var labelLayout = d3.forceSimulation(label.nodes)
-      .force("charge", d3.forceManyBody().strength(-50))
+      .force("charge", d3.forceManyBody().strength(-100))
       .force("link", d3.forceLink(label.links).distance(0).strength(2))
       .on("tick", labelTicked);
 
   var graphLayout = d3.forceSimulation(graph.nodes)
-      .force("charge", d3.forceManyBody().strength(-3000))
+      .force("charge", d3.forceManyBody().strength(-2000))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("x", d3.forceX(width / 2).strength(1))
       .force("y", d3.forceY(height / 2).strength(1))
       .force("link", d3.forceLink(graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
       .on("tick", graphTicked);
-
-  var adjlist = [];
-
-  graph.links.forEach(function(d) {
-    adjlist[d.source.index + "-" + d.target.index] = true;
-    adjlist[d.target.index + "-" + d.source.index] = true;
-  });
-
-  function neigh(a, b) {
-    return a === b || adjlist[a + "-" + b];
-  }
-
 
   var svg = d3.select("#viz").attr("width", width).attr("height", height);
   var container = svg.append("g");
@@ -71,15 +59,6 @@ function drawGraph(graph) {
       .attr("r", 5)
       .attr("fill", function(d) { return color(d.group); })
 
-  node.on("mouseover", focus).on("mouseout", unfocus);
-
-  node.call(
-    d3.drag()
-    .on("start", dragstarted)
-    .on("drag", dragged)
-    .on("end", dragended)
-  );
-
   var labelNode = container.append("g").attr("class", "labelNodes")
       .selectAll("text")
       .data(label.nodes)
@@ -91,8 +70,6 @@ function drawGraph(graph) {
       .style("font-size", 12)
       .style("pointer-events", "none"); // to prevent mouseover/drag capture
 
-  node.on("mouseover", focus).on("mouseout", unfocus);
-
   function graphTicked() {
     node.call(updateNode);
     link.call(updateLink);
@@ -100,23 +77,10 @@ function drawGraph(graph) {
 
 
   function labelTicked() {
-    labelLayout.alphaTarget(0.3).restart();
     labelNode.each(function(d, i) {
       if(i % 2 == 0) {
         d.x = d.node.x;
         d.y = d.node.y;
-      } else {
-        var b = this.getBBox();
-
-        var diffX = d.x - d.node.x;
-        var diffY = d.y - d.node.y;
-
-        var dist = Math.sqrt(diffX * diffX + diffY * diffY);
-
-        var shiftX = b.width * (diffX - dist) / (dist * 2);
-        shiftX = Math.max(-b.width, Math.min(0, shiftX));
-        var shiftY = 16;
-        this.setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
       }
     });
     labelNode.call(updateNode);
@@ -126,25 +90,6 @@ function drawGraph(graph) {
   function fixna(x) {
     if (isFinite(x)) return x;
     return 0;
-  }
-
-  function focus(d) {
-    var index = d3.select(d3.event.target).datum().index;
-    node.style("opacity", function(o) {
-      return neigh(index, o.index) ? 1 : 0.1;
-    });
-    labelNode.attr("display", function(o) {
-      return neigh(index, o.node.index) ? "block": "none";
-    });
-    link.style("opacity", function(o) {
-      return o.source.index == index || o.target.index == index ? 1 : 0.1;
-    });
-  }
-
-  function unfocus() {
-    labelNode.attr("display", "block");
-    node.style("opacity", 1);
-    link.style("opacity", 1);
   }
 
   function updateLink(link) {
@@ -158,24 +103,6 @@ function drawGraph(graph) {
     node.attr("transform", function(d) {
       return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
     });
-  }
-
-  function dragstarted(d) {
-    d3.event.sourceEvent.stopPropagation();
-    if (!d3.event.active) graphLayout.alphaTarget(0.3).restart();
-    d.fx = d.x;
-    d.fy = d.y;
-  }
-
-  function dragged(d) {
-    d.fx = d3.event.x;
-    d.fy = d3.event.y;
-  }
-
-  function dragended(d) {
-    if (!d3.event.active) graphLayout.alphaTarget(0);
-    d.fx = null;
-    d.fy = null;
   }
 }
 
