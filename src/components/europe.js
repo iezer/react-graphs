@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import WorldMap from './WorldMap';
+import ChloroplethMap from './ChloroplethMap';
 
 import XYPlot from 'reactochart/XYPlot';
 import XAxis from 'reactochart/XAxis';
@@ -182,6 +183,8 @@ class Europe extends Component {
             y={d => d.y}
           />
         </XYPlot>
+
+        <ChloroplethMap countries={ countries } />
 
       </div>
     );
