@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { geoOrthographic, geoPath } from "d3-geo";
 import { feature } from "topojson-client";
-import { select } from "d3-selection";
+import { select, event } from "d3-selection";
 import { forceSimulation, forceManyBody, forceLink} from "d3-force";
 
 // examples of force-directed labels
@@ -21,6 +21,8 @@ class WorldMap extends Component {
       height: 900,
       worldData: [],
     };
+
+    this.clearMarker = this.clearMarker.bind(this);
   }
   projection() {
     let { width, height } = this.state;
@@ -45,20 +47,17 @@ class WorldMap extends Component {
     });
   }
 
+  clearMarker() {
+    this.props.selectCity();
+  }
+
   handleMarkerClick(index) {
     let marker = this.props.markers[index];
-    let size = marker.events.length;
-    let text = [
-      marker.location.city,
-      `${size} ${ size === 1 ? 'event' : 'events'}`
-    ].concat(marker.events.map(e => e.displayName));
-
-    alert(text.join(','));
-    console.log(text.join(', '));
+    this.props.selectCity(marker);
+    event.stopPropagation();
   }
 
   renderNodes() {
-    console.log('renderNodes');
     let eventCounts = this.props.markers.map(m => m.events.length);
     let maxEvents = Math.max.apply(null, eventCounts);
 
@@ -198,7 +197,7 @@ class WorldMap extends Component {
     }, 0);
 
     return (
-      <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`}>
+      <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`} onClick={this.clearMarker}>
         <g className="countries">
           {
             this.state.worldData.map((d,i) => {

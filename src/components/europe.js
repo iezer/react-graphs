@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import WorldMap from './WorldMap';
 import ChloroplethMap from './ChloroplethMap';
+import CityList from './CityList';
 
 import XYPlot from 'reactochart/XYPlot';
 import XAxis from 'reactochart/XAxis';
@@ -83,9 +84,18 @@ class Europe extends Component {
   constructor() {
     super();
     this.state = {
+      width: 1200,
+      height: 300,
       hasAllData: false,
-      cities: {}
+      cities: {},
+      selectedCity: null
     };
+
+    this.selectCity = this.selectCity.bind(this);
+  }
+
+  selectCity(selectedCity) {
+    this.setState({ selectedCity });
   }
 
   consumeData(response) {
@@ -148,6 +158,10 @@ class Europe extends Component {
     });
   }
 
+  renderCity(city) {
+    return <CityList width={this.state.width} city={city} />;
+  }
+
   render() {
     if (!this.state.hasAllData) {
       return null;
@@ -170,13 +184,19 @@ class Europe extends Component {
       return { x: country, y: countries[country] };
     });
 
+    // let selectedCity = markers.find(m => m.location.city.includes("Paris"));
+
+    let { selectedCity, width, height } = this.state;
+
     return (
-      <div>
-        <WorldMap markers={markers}/>
+      <div className="europe">
+        <WorldMap markers={markers} selectCity={this.selectCity} />
+
+        { selectedCity ? this.renderCity(selectedCity) : null }
 
         <ChloroplethMap countries={ countries } />
 
-        <XYPlot width={1200} height={300}>
+        <XYPlot width={width} height={height}>
           <XAxis />
           <YAxis />
           <BarChart

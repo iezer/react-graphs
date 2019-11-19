@@ -20,3 +20,17 @@
 .App-link {
   color: #09d3ac;
 }
+
+.europe {
+  position: relative;
+}
+.place-data {
+  padding: 4px 16px;
+  opacity: 0.75;
+  background: lightgreen;
+  position: absolute;
+  width: auto;
+  top: 0;
+  height: auto;
+
+}
