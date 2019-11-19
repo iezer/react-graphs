@@ -149,6 +149,10 @@ class Europe extends Component {
   }
 
   render() {
+    if (!this.state.hasAllData) {
+      return null;
+    }
+
     let { cities } = this.state;
     let markers = Object.keys(cities).map(c => cities[c]);
 
@@ -166,13 +170,11 @@ class Europe extends Component {
       return { x: country, y: countries[country] };
     });
 
-    console.log(`render hasAllData? ${this.state.hasAllData}`);
     return (
       <div>
-        { this.state.hasAllData ?
-          <WorldMap markers={markers}/>
-          : null
-        }
+        <WorldMap markers={markers}/>
+
+        <ChloroplethMap countries={ countries } />
 
         <XYPlot width={1200} height={300}>
           <XAxis />
@@ -183,9 +185,6 @@ class Europe extends Component {
             y={d => d.y}
           />
         </XYPlot>
-
-        <ChloroplethMap countries={ countries } />
-
       </div>
     );
   }
