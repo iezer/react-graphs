@@ -73,7 +73,7 @@ class WorldMap extends Component {
       return {x, y, city, r};
     });
 
-    let self = this;
+    let handleMarkerClick = this.handleMarkerClick.bind(this);
     let g = d3.select('.markers');
     g.selectAll('circle')
     .data(nodes)
@@ -83,11 +83,12 @@ class WorldMap extends Component {
     .attr('cy', function(d) { return d.y; })
     .attr('r', function(d) { return d.r; })
     .attr('fill', "#E91E63")
+    .attr('style', 'cursor: pointer')
     .attr('class', function(d) {
       return `marker marker-${d.city}`;
     })
     .on('click', function(d,i) {
-      self.handleMarkerClick(i);
+      handleMarkerClick(i);
     });
   }
 
@@ -114,13 +115,21 @@ class WorldMap extends Component {
       graph.links.push({ source: i * 2, target: i * 2 + 1 });
     });
 
+    let handleMarkerClick = this.handleMarkerClick.bind(this);
     let nodes = g.selectAll('text')
         .data(graph.nodes)
         .enter()
         .append('text')
         .attr('text-anchor', 'middle')
+        .attr('style', 'cursor: pointer')
         .text(function(d, i) { return i % 2 === 0 ? '' : d.node.label; })
-        .attr('class', function(d) { return `label label-${d.node.label}`; });
+        .attr('class', function(d) { return `label label-${d.node.label}`; })
+        .on('click', function(d,i) {
+          if (i % 2 !== 0) {
+            handleMarkerClick(Math.floor(i / 2));
+          }
+        });
+;
 
     let lines = g.selectAll('line')
         .data(graph.nodes)
