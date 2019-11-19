@@ -6,6 +6,8 @@ import { feature } from "topojson-client";
 // https://bl.ocks.org/JulienAssouline/1ae3480c5277e2eecd34b71515783d6f
 // countries comes from https://github.com/topojson/world-atlas
 
+// hover labels http://bl.ocks.org/MaciejKus/61e9ff1591355b00c1c1caf31e76a668
+
 const COUNTRY_NAMES = {
   "Czechia": "Czech Republic",
   "United Kingdom": "UK"
@@ -95,6 +97,38 @@ class ChloroplethMap extends Component {
     });
   }
 
+  showTooltip(event, d) {
+    let tooltip = d3.select('#chloropleth-map .tooltip');
+    let label = this.info(d.properties.name);
+
+    let { width } = this.state;
+    let offsetL = 10;
+    let offsetT = 10;
+    let { pageX: x, pageY: y} = event;
+    let map = document.getElementById('chloropleth-map');
+
+    let style = x < width / 2 ?
+        `left:${x + offsetL}px; top:${y + offsetT}px` :
+        `right:${map.clientWidth - x + offsetL}px; top:${y + offsetT}px; text-align: right;`;
+
+    tooltip
+    .attr('hidden', null)
+    .attr("style", style)
+    .html(label);
+  }
+
+  info(country) {
+    let { countries } = this.props;
+
+    let value = countries[country] || countries[COUNTRY_NAMES[country]] || 0;
+
+    if (value === 0) {
+      return country;
+    }
+
+    return `${country}: ${value}${value === 1 ? " show" : " shows"}`;
+  }
+
   render() {
     let { width, height } = this.state;
     let { countries } = this.props;
@@ -106,29 +140,40 @@ class ChloroplethMap extends Component {
     this.validate();
 
     return (
-      <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`}>
-        { this.renderLegend(color(0), color(max))}
+      <div id="chloropleth-map">
 
-        <g className="countries">
-          {
-            this.state.worldData.map((d,i) => {
-              let { name: country } = d.properties;
-              let value = countries[country] || countries[COUNTRY_NAMES[country]] || 0;
-              return (
-                <path
-                  key={ `path-${ i }` }
-                  d={ geoPath().projection(this.projection())(d) }
-                  className={`chloropleth-country ${country}`}
-                  fill={ value ? color(value): 'lightgray' }
-                  stroke="black"
-                  strokeWidth={ 0.5 }
-                  onClick={ function() { alert(`${country}: ${value} shows`); }}
-                />
-              );
-            })
-          }
-        </g>
-      </svg>
+        <div className="tooltip" hidden>
+        </div>
+
+        <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`}>
+          { this.renderLegend(color(0), color(max))}
+
+          <g className="countries">
+            {
+              this.state.worldData.map((d,i) => {
+                let { name: country } = d.properties;
+                let value = countries[country] || countries[COUNTRY_NAMES[country]] || 0;
+                return (
+                  <path
+                    key={ `path-${ i }` }
+                    d={ geoPath().projection(this.projection())(d) }
+                    className={`chloropleth-country ${country}`}
+                    fill={ value ? color(value): 'lightgray' }
+                    stroke="black"
+                    strokeWidth={ 0.5 }
+                    onMouseMove= {(event) => {
+                      this.showTooltip(event, d);
+                    }}
+                    onMouseOut={ () => {
+                      d3.select('.tooltip').attr('hidden', true);
+                    }}
+                  />
+                );
+              })
+            }
+          </g>
+        </svg>
+      </div>
     );
   }
 }
