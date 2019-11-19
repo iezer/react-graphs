@@ -30,7 +30,7 @@ class WorldMap extends Component {
     .scale([ width ]); // zoom, plus la valeur est petit plus le zoom est gros
   }
   componentDidMount() {
-    fetch("https://d3js.org/world-110m.v1.json")
+    fetch("/countries-110m.json")
     .then(response => {
       if (response.status !== 200) {
         console.log(`There was a problem: ${response.status}`);
