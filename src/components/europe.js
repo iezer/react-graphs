@@ -55,11 +55,11 @@ function upcomingGigsUrl(artist_id) {
 
 const artists = [
   ['Cécile McLorin Salvant', '2804751'],
-  // ['Chris Potter', '466442'],
-  // ['Fred Hersch', '216551'],
-  // ['Fred Hersch Trio', '26926'],
-  // ['Brad Mehldau', '429459'],
-  // ['Melissa Aldana', '6813869']
+  ['Chris Potter', '466442'],
+  ['Fred Hersch', '216551'],
+  ['Fred Hersch Trio', '26926'],
+  ['Brad Mehldau', '429459'],
+  ['Melissa Aldana', '6813869']
 ];
 
 function getCountryFromLocation(location) {
