@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { geoMercator, geoPath } from "d3-geo";
+import { geoOrthographic, geoPath } from "d3-geo";
 import * as d3 from "d3";
 import { feature } from "topojson-client";
 
@@ -24,8 +24,8 @@ class WorldMap extends Component {
   projection() {
     let { width, height } = this.state;
 
-    return geoMercator()
-    .center([ 13, 48 ]) //comment centrer la carte, longitude, latitude
+    return geoOrthographic()
+    .center([ 13, 50 ]) //comment centrer la carte, longitude, latitude
     .translate([ width/2, height/2 ]) // centrer l'image obtenue dans le svg
     .scale([ width ]); // zoom, plus la valeur est petit plus le zoom est gros
   }
@@ -118,11 +118,19 @@ class WorldMap extends Component {
         .data(graph.nodes)
         .enter()
         .append('text')
-        // .attr('x', function(d) { return d.node.x; })
-        // .attr('y', function(d) { return d.node.y; })
         .attr('text-anchor', 'middle')
         .text(function(d, i) { return i % 2 === 0 ? '' : d.node.label; })
         .attr('class', function(d) { return `label label-${d.node.label}`; });
+
+    let lines = g.selectAll('line')
+        .data(graph.nodes)
+        .enter()
+        .append('line')
+        .attr('stroke', 'blue')
+        .attr('x1', function(d) { return d.node.x; })
+        .attr('x2', function(d) { return d.x; })
+        .attr('y1', function(d) { return d.node.y; })
+        .attr('y2', function(d) { return d.y; });
 
     function fixna(x) {
       if (isFinite(x)) return x;
@@ -137,8 +145,8 @@ class WorldMap extends Component {
 
     let simulation = d3.forceSimulation(graph.nodes)
         .alphaDecay(0.1)
-        .force('charge', d3.forceManyBody().strength(-140).distanceMin(0).distanceMax(10))
-        .force('link', d3.forceLink(graph.links).distance(0));
+        .force('charge', d3.forceManyBody().strength(-500))
+        .force('link', d3.forceLink(graph.links).distance(15).strength(2));
 
     simulation
     .on("tick", function() {
@@ -161,6 +169,13 @@ class WorldMap extends Component {
       });
 
       nodes.call(updateNode);
+
+      lines
+      .attr('x1', function(d) { return d.node.x; })
+      .attr('x2', function(d) { return d.x; })
+      .attr('y1', function(d) { return d.node.y; })
+      .attr('y2', function(d) { return d.y; });
+
     });
   }
 
