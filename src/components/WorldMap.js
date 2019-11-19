@@ -93,7 +93,6 @@ class WorldMap extends Component {
   }
 
   renderLabels() {
-    let { width } = this.state;
     // render labels with D3
     let g = d3.select('.labels');
     let projection = this.projection();
@@ -172,7 +171,7 @@ class WorldMap extends Component {
           let shiftX = b.width * (diffX - dist) / (dist * 2);
           shiftX = Math.max(-b.width, Math.min(0, shiftX));
           let shiftY = 16;
-          console.log(`b ${b.width} ${b.height} ${d.node.label} ${shiftX}`);
+          // console.log(`b ${b.width} ${b.height} ${d.node.label} ${shiftX}`);
           this.setAttribute('transform', "translate(" + shiftX + "," + shiftY + ")");
         }
       });
@@ -189,7 +188,7 @@ class WorldMap extends Component {
   }
 
   render() {
-    console.log(JSON.stringify(this.props.markers));
+    // console.log(JSON.stringify(this.props.markers));
     let { width, height } = this.state;
 
     setTimeout(() => {

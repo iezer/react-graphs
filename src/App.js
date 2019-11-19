@@ -1,17 +1,12 @@
 import React from 'react';
 import './App.css';
-import QuickStartGraph from './components/graph';
 import Europe from './components/europe';
-import WorldMap from './components/WorldMap';
 import TestForce from './components/TestForce';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
-
-import markers from './data';
 
 function App() {
   return (
