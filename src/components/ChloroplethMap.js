@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import { geoOrthographic, geoPath } from "d3-geo";
-import * as d3 from "d3";
 import { feature } from "topojson-client";
+import { select } from "d3-selection";
+import { max, extent } from "d3-array";
+import { scaleLinear, scaleSequential } from "d3-scale";
+import { axisRight } from "d3-axis";
+import { interpolateYlOrRd } from "d3-scale-chromatic";
 
 // https://bl.ocks.org/JulienAssouline/1ae3480c5277e2eecd34b71515783d6f
 // countries comes from https://github.com/topojson/world-atlas
@@ -50,14 +54,14 @@ class ChloroplethMap extends Component {
   }
 
   renderLegendAxis() {
-    let g = d3.select(".legend .y-axis");
+    let g = select(".legend .y-axis");
     let values = Object.values(this.props.countries);
 
-    let yScale = d3.scaleLinear()
+    let yScale = scaleLinear()
         .range([300, 0])
-        .domain(d3.extent(values));
+        .domain(extent(values));
 
-    let yAxis = d3.axisRight(yScale);
+    let yAxis = axisRight(yScale);
 
     g.attr('transform', 'translate(70, 410)');
     g.call(yAxis);
@@ -98,7 +102,7 @@ class ChloroplethMap extends Component {
   }
 
   showTooltip(event, d) {
-    let tooltip = d3.select('#chloropleth-map .tooltip');
+    let tooltip = select('#chloropleth-map .tooltip');
     let label = this.info(d.properties.name);
 
     let { width } = this.state;
@@ -133,9 +137,9 @@ class ChloroplethMap extends Component {
     let { width, height } = this.state;
     let { countries } = this.props;
     let values = Object.values(countries);
-    let max = d3.max(values);
-    let color = d3.scaleSequential(d3.interpolateYlOrRd)
-        .domain(d3.extent(values));
+    let maxV = max(values);
+    let color = scaleSequential(interpolateYlOrRd)
+        .domain(extent(values));
 
     this.validate();
 
@@ -146,7 +150,7 @@ class ChloroplethMap extends Component {
         </div>
 
         <svg width={ width } height={ height } viewBox={`0 0 ${width} ${height}`}>
-          { this.renderLegend(color(0), color(max))}
+          { this.renderLegend(color(0), color(maxV))}
 
           <g className="countries">
             {
@@ -165,7 +169,7 @@ class ChloroplethMap extends Component {
                       this.showTooltip(event, d);
                     }}
                     onMouseOut={ () => {
-                      d3.select('.tooltip').attr('hidden', true);
+                      select('.tooltip').attr('hidden', true);
                     }}
                   />
                 );
