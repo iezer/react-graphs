@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { geoOrthographic, geoPath } from "d3-geo";
-import * as d3 from "d3";
 import { feature } from "topojson-client";
+import { select } from "d3-selection";
+import { forceSimulation, forceManyBody, forceLink} from "d3-force";
 
 // examples of force-directed labels
 // http://bl.ocks.org/ZJONSSON/1691430
@@ -74,7 +75,7 @@ class WorldMap extends Component {
     });
 
     let handleMarkerClick = this.handleMarkerClick.bind(this);
-    let g = d3.select('.markers');
+    let g = select('.markers');
     g.selectAll('circle')
     .data(nodes)
     .enter()
@@ -94,7 +95,7 @@ class WorldMap extends Component {
 
   renderLabels() {
     // render labels with D3
-    let g = d3.select('.labels');
+    let g = select('.labels');
     let projection = this.projection();
 
     let graph = {
@@ -151,10 +152,10 @@ class WorldMap extends Component {
       });
     }
 
-    let simulation = d3.forceSimulation(graph.nodes)
+    let simulation = forceSimulation(graph.nodes)
         .alphaDecay(0.1)
-        .force('charge', d3.forceManyBody().strength(-500))
-        .force('link', d3.forceLink(graph.links).distance(15).strength(2));
+        .force('charge', forceManyBody().strength(-500))
+        .force('link', forceLink(graph.links).distance(15).strength(2));
 
     simulation
     .on("tick", function() {
