@@ -2,7 +2,7 @@ import React  from "react";
 
 function CityList(props) {
   let { width, city } = props;
-  let container = document.querySelector('.europe');
+  let container = document.querySelector('.position-relative');
   if (!container) { return null; }
   let right = container.clientWidth - width;
 

@@ -26,7 +26,7 @@ function App() {
         </Switch>
       </article>
       <footer>
-        Made by the designer of <a href="http://splanky.net/">Splanky.net</a>.
+        Made by <a href="http://www.isaacezer.com/" target="_blank" rel="noopener noreferrer" >Isaac Ezer</a>, the designer of <a href="http://splanky.net/">Splanky.net</a>.
       </footer>
     </Router>
   );

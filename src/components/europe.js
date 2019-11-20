@@ -216,9 +216,11 @@ class Europe extends Component {
 
         <h2>Gigs by City</h2>
 
-        <WorldMap markers={markers} selectCity={this.selectCity} />
+        <div className="position-relative">
+          <WorldMap markers={markers} selectCity={this.selectCity} />
 
-        { selectedCity ? this.renderCity(selectedCity) : null }
+          { selectedCity ? this.renderCity(selectedCity) : null }
+        </div>
 
         <h2>Gigs By Country</h2>
         <ChloroplethMap countries={ countries } />

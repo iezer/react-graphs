@@ -64,3 +64,11 @@ svg {
 .chloropleth-country {
   cursor: pointer;
 }
+
+footer {
+  margin: 20px;
+}
+
+.position-relative {
+  position: relative;
+}
