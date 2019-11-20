@@ -194,7 +194,8 @@ class Europe extends Component {
 
     return (
       <section className="europe">
-        <h1>Splanky Europe: European Jazz Tours</h1>
+        <h1 className="inline-block">Splanky Europe</h1>
+        <h2 className="inline-block">European Jazz Tours</h2>
         <p>
           This page shows jazz gigs in 2019 for the following artists:<br/>
           {artists.map(([name, id], index) => {

@@ -34,3 +34,33 @@
   height: auto;
 
 }
+
+#root {
+  padding: 0 10px;
+}
+
+h1 {
+  font-size: 35px;
+  color: #26d34f;
+  margin: 10px;
+}
+
+h2 {
+  font-size: 15px;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+ {
+  margin-left: 10px;
+}
+
+svg {
+  border: 1px solid darkgray;
+}
+
+.chloropleth-country {
+  cursor: pointer;
+}
