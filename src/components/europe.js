@@ -64,6 +64,10 @@ const artists = [
   ['Melissa Aldana', '6813869']
 ];
 
+const ARTIST_DUPLICATES = [
+  'Fred Hersch Trio'
+];
+
 function getCountryFromLocation(location) {
   let tokens = location.city.split(', ');
   let country = tokens[tokens.length - 1];
@@ -189,11 +193,33 @@ class Europe extends Component {
     let { selectedCity, width, height } = this.state;
 
     return (
-      <div className="europe">
+      <section className="europe">
+        <h1>Splanky Europe: European Jazz Tours</h1>
+        <p>
+          This page shows jazz gigs in 2019 for the following artists:<br/>
+          {artists.map(([name, id], index) => {
+            if (ARTIST_DUPLICATES.includes(name)) {
+              return null;
+            }
+
+            let isLast = index === artists.length - 1;
+
+            let url =`https://www.songkick.com/artists/${id}`;
+            return (
+              <a href={url} target="_blank" rel="noopener noreferrer" key={id}>
+                {name} { isLast ? "" : ", " }
+              </a>
+            );
+          })}
+        </p>
+
+        <h2>Gigs by City</h2>
+
         <WorldMap markers={markers} selectCity={this.selectCity} />
 
         { selectedCity ? this.renderCity(selectedCity) : null }
 
+        <h2>Gigs By Country</h2>
         <ChloroplethMap countries={ countries } />
 
         <XYPlot width={width} height={height}>
@@ -205,7 +231,7 @@ class Europe extends Component {
             y={d => d.y}
           />
         </XYPlot>
-      </div>
+      </section>
     );
   }
 }

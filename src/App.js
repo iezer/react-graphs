@@ -11,7 +11,7 @@ import {
 function App() {
   return (
     <Router>
-      <div>
+      <article>
 
         {/* A <Switch> looks through its children <Route>s and
            renders the first one that matches the current URL. */}
@@ -24,7 +24,10 @@ function App() {
             <Europe />
           </Route>
         </Switch>
-      </div>
+      </article>
+      <footer>
+        Made by the designer of <a href="http://splanky.net/">Splanky.net</a>.
+      </footer>
     </Router>
   );
 }
